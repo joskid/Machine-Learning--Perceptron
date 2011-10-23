@@ -47,8 +47,6 @@ def sumFunction(values, weights):
 
 # A helper function that comptues the margin of the vectors values and weights
 # Given a feature vector x and weight vector w, the margin is: x.w/norm(w)
-# I use the absolute value to calculate absolute margin, as trainPerceptron
-# already has a way to compute the number of errors
 def margin(values,weights, desiredOutput):
 	if desiredOutput == 0:
 		desiredOutput = -1
