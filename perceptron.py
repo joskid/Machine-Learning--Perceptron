@@ -122,7 +122,7 @@ def modifiedPerceptron(trainingSet, givenMargin):
 			inputVector = row[0:xLength]
 			desiredOutput = row[-1]
 			
-			# This is only checking the margin of one vector
+			# Modified update condition
 			if weights[0] == 0.0 or (margin(inputVector, weights, desiredOutput) < marginTest):
 				errorCount += 1
 				for index, value in enumerate(inputVector):
@@ -147,14 +147,13 @@ def modifiedPerceptron(trainingSet, givenMargin):
 # This tests the accuracy of the perceptron on the test set
 def testPerceptron(testSet, weights):
 	xLength = (len(testSet[1])-1)
-	threshold = 0.0
 	errorCount = 0.0
 	testCount = 0.0
 	
 	for row in testSet:
 		inputVector = row[0:xLength]
 		desiredOutput = row[-1]
-		result = 1 if sumFunction(inputVector, weights) > threshold else 0
+		result = 1 if sumFunction(inputVector, weights) > 0 else 0
 		#print result
 		error = desiredOutput - result
 		if error != 0:
@@ -165,6 +164,48 @@ def testPerceptron(testSet, weights):
 
 
 
+# This effectively adds an offset to the weight vector by averaging the points
+# and then shifting them over the origin
+def shiftOrigin(trainingSet):
+	xLength = (len(trainingSet[1])-1)
+	justValues = [row[0:xLength] for row in trainingSet]
+	avg = [0] * xLength
+	sumof = [0] * xLength
+	
+	rowCount = 0
+	elementCount = 0
+	
+	for row in justValues:
+		for x in row:
+			sumof[elementCount] += x
+			elementCount += 1
+		rowCount += 1
+		elementCount = 0
+		
+	for row in justValues:
+		for x in row:
+			avg[elementCount] = sumof[elementCount] / rowCount
+			elementCount += 1
+		elementCount = 0
+		
+	print "average is: ", avg
+	
+	rowCount = 0
+	elementCount = 0
+	
+	for row in justValues:
+		for x in row:
+			#print "adding ", avg, "to ", x
+			trainingSet[rowCount][elementCount] += avg[elementCount]
+			elementCount += 1
+		elementCount = 0
+		rowCount += 1
+		
+	return trainingSet		
+
+
+# Main takes in two csv files, calculates the perceptron on the first, tests on the second,
+# and then calculates the modified perceptron on the first and again tests on the second
 def main():
 	trainSet = readin("sonarTrain.txt")
 	weights = trainPerceptron(trainSet)
@@ -182,6 +223,6 @@ def main():
 	
 
 
+
 if __name__ == '__main__':
 	main()
-
